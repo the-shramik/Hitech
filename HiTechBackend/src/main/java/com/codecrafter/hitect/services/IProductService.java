@@ -17,6 +17,11 @@ public interface IProductService {
 
     Map<String, Object> updateProduct(Long productId,String productName, List<MultipartFile> imageFiles, Long subMainCategoryId, Long subCategoryId) throws IOException;
 
-
     Boolean deleteProduct(Long productId);
+
+    List<ProductDto> getAllProductsBySubMainCategory(Long subMainCategoryId);
+
+    List<ProductDto> getAllProductsBySubCategory(Long subCategoryId);
+
+    List<ProductDto> getAllProductsByMainCategory(Long mainCategoryId);
 }

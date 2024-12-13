@@ -86,4 +86,35 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("success", false, "message", e.getMessage()));
         }
     }
+
+    @GetMapping("/get-products-by-sub-main-category")
+    public ResponseEntity<?> getProductsBySubMainCategory(@RequestParam Long subMainCategoryId) {
+        try {
+            List<ProductDto> products = productService.getAllProductsBySubMainCategory(subMainCategoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting products: " + e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/get-products-by-sub-category")
+    public ResponseEntity<?> getProductsBySubCategory(@RequestParam Long subCategoryId) {
+        try {
+            List<ProductDto> products = productService.getAllProductsBySubCategory(subCategoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting products: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-products-by-main-category")
+    public ResponseEntity<?> getProductsByMainCategory(@RequestParam Long mainCategoryId) {
+        try {
+            List<ProductDto> products = productService.getAllProductsByMainCategory(mainCategoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting products: " + e.getMessage());
+        }
+    }
 }

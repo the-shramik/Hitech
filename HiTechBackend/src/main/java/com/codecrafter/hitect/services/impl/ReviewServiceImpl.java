@@ -1,6 +1,7 @@
 package com.codecrafter.hitect.services.impl;
 
 import com.codecrafter.hitect.entities.Review;
+import com.codecrafter.hitect.exception.ResourceNotFoundException;
 import com.codecrafter.hitect.repositories.IReviewRepository;
 import com.codecrafter.hitect.services.IReviewService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ public class ReviewServiceImpl implements IReviewService {
     @CacheEvict(value = "reviews", allEntries = true)
     @Override
     public Review addReview(Review review) {
+
+        review.setAccepted(false);
         return reviewRepository.save(review);
     }
 
@@ -34,5 +37,26 @@ public class ReviewServiceImpl implements IReviewService {
 
         reviewRepository.deleteById(reviewId);
         return true;
+    }
+
+    @Override
+    public String updateReview(Long reviewId) {
+
+        Review review=reviewRepository.findById(reviewId).orElseThrow(
+                ()->new ResourceNotFoundException("Review not found")
+        );
+
+        review.setAccepted(true);
+        return "review updated..!";
+    }
+
+    @Override
+    public List<Review> getAcceptedReviews() {
+        return reviewRepository.getAllByAccepted(true);
+    }
+
+    @Override
+    public List<Review> getDeniedReviews() {
+        return reviewRepository.getAllByAccepted(false);
     }
 }

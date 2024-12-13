@@ -26,7 +26,8 @@ public class MainCategoryController {
 
     @GetMapping("/get-main-categories")
     public ResponseEntity<?> getMainCategories(){
-        return ResponseEntity.ok(categoryService.getAllMainCategories());
+
+       return ResponseEntity.ok(categoryService.getAllMainCategories());
     }
 
     @PutMapping("/update-main-category")

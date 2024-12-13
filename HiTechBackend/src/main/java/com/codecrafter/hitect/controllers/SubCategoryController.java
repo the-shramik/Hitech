@@ -18,6 +18,7 @@ public class SubCategoryController {
     @PostMapping("/add-sub-category")
     public ResponseEntity<?> addSubCategory(@RequestBody SubCategory subCategory){
 
+        System.out.println(subCategory.getSubMainCategory().getSubMainCategoryId());
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(subCategoryService.addSubCategory(subCategory));
         } catch (Exception e){

@@ -22,4 +22,6 @@ public class Review {
     private String review;
 
     private Integer rating;
+
+    private boolean isAccepted;
 }

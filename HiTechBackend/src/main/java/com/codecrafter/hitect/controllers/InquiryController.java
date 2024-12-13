@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/inquiry")
+@CrossOrigin("*")
 public class InquiryController {
     private final IInquiryService inquiryService;
 

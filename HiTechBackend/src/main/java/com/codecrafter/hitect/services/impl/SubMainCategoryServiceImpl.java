@@ -1,8 +1,10 @@
 package com.codecrafter.hitect.services.impl;
 
+import com.codecrafter.hitect.entities.MainCategory;
 import com.codecrafter.hitect.entities.SubCategory;
 import com.codecrafter.hitect.entities.SubMainCategory;
 import com.codecrafter.hitect.exception.ResourceNotFoundException;
+import com.codecrafter.hitect.repositories.IMainCategoryRepository;
 import com.codecrafter.hitect.repositories.ISubMainCategoryRepository;
 import com.codecrafter.hitect.services.ISubMainCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,16 @@ public class SubMainCategoryServiceImpl implements ISubMainCategoryService {
 
     private final ISubMainCategoryRepository subMainCategoryRepository;
 
+    private final IMainCategoryRepository mainCategoryRepository;
+
     @CacheEvict(value = "submaincategories", allEntries = true)
     @Override
     public SubMainCategory addSubMainCategory(SubMainCategory subMainCategory) {
+        MainCategory managedMainCategory = mainCategoryRepository
+                .findById(subMainCategory.getMainCategory().getMainCategoryId())
+                .orElseThrow(() -> new RuntimeException("MainCategory not found"));
+
+        subMainCategory.setMainCategory(managedMainCategory);
         subMainCategory.setSubMainCategoryAddedDate(LocalDate.now());
         return subMainCategoryRepository.save(subMainCategory);
     }

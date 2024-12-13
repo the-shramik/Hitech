@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/review")
+@CrossOrigin("*")
 public class ReviewController {
 
     private final IReviewService reviewService;
@@ -37,4 +38,21 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Review not deleted!");
         }
     }
+
+    @PutMapping("/update-review")
+    public ResponseEntity<?> updateReview(@RequestParam Long reviewId){
+
+        return ResponseEntity.ok(reviewService.updateReview(reviewId));
+    }
+
+    @GetMapping("/get-accepted-reviews")
+    public ResponseEntity<?> getAcceptedReviews(){
+        return ResponseEntity.ok(reviewService.getAcceptedReviews());
+    }
+
+    @GetMapping("/get-denied-reviews")
+    public ResponseEntity<?> getDeniedReviews(){
+        return ResponseEntity.ok(reviewService.getDeniedReviews());
+    }
+
 }

@@ -30,6 +30,8 @@ public class SubMainCategoryController {
 
     @GetMapping("/get-sub-main-categories")
     public ResponseEntity<?> getSubMainCategories(){
+
+
         return ResponseEntity.ok(subMainCategoryService.getAllSubMainCategories());
     }
 
@@ -68,6 +70,9 @@ public class SubMainCategoryController {
     @GetMapping("/get-sub-main-categories-by-main-category")
     public ResponseEntity<?> getSubMainCategoriesByMainCategory(@RequestParam Long mainCategoryId){
 
+        System.out.println("Sub main category working");
+        System.out.println(mainCategoryId);
+        System.out.println(subMainCategoryService.getSubMainCategoriesByMainCategory(mainCategoryId));
         return ResponseEntity.ok(subMainCategoryService.getSubMainCategoriesByMainCategory(mainCategoryId));
     }
 }

@@ -5,6 +5,7 @@ import com.codecrafter.hitect.entities.SubCategory;
 import com.codecrafter.hitect.entities.SubMainCategory;
 import com.codecrafter.hitect.exception.ResourceNotFoundException;
 import com.codecrafter.hitect.repositories.ISubCategoryRepository;
+import com.codecrafter.hitect.repositories.ISubMainCategoryRepository;
 import com.codecrafter.hitect.services.ISubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,9 +21,15 @@ public class SubCategoryServiceImpl implements ISubCategoryService {
 
     private final ISubCategoryRepository subCategoryRepository;
 
+    private final ISubMainCategoryRepository subMainCategoryRepository;
     @CacheEvict(value = "subcategories", allEntries = true)
     @Override
     public SubCategory addSubCategory(SubCategory subCategory) {
+        SubMainCategory subMainCategory = subMainCategoryRepository
+                .findById(subCategory.getSubMainCategory().getSubMainCategoryId())
+                .orElseThrow(() -> new RuntimeException("SubMainCategory not found"));
+
+        subCategory.setSubMainCategory(subMainCategory);
         subCategory.setSubCategoryAddedDate(LocalDate.now());
         return subCategoryRepository.save(subCategory);
     }

@@ -22,6 +22,6 @@ public class InquiryForm {
     private String email;
     private String address;
 
-    @Lob
-    private String inquiry;
+//    @Lob
+//    private String inquiry;
 }

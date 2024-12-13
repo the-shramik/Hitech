@@ -24,7 +24,6 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 
 @Service
@@ -223,5 +222,65 @@ public class ProductServiceImpl implements IProductService {
         productRepository.deleteById(productId);
 
         return true;
+    }
+
+    @Cacheable(value = "products")
+    @Override
+    public List<ProductDto> getAllProductsBySubMainCategory(Long subMainCategoryId) {
+        List<Product> products = productRepository.findBySubMainCategory(subMainCategoryId);
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto productDto = new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+            productDtos.add(productDto);
+        }
+        return productDtos;
+    }
+
+    @Cacheable(value = "products")
+    @Override
+    public List<ProductDto> getAllProductsBySubCategory(Long subCategoryId) {
+        List<Product> products = productRepository.findBySubCategory(subCategoryId);
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto productDto = new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+            productDtos.add(productDto);
+        }
+        return productDtos;
+    }
+
+    @Cacheable(value = "products")
+    @Override
+    public List<ProductDto> getAllProductsByMainCategory(Long mainCategoryId) {
+        List<Product> products = productRepository.findAllProductsByMainCategoryId(mainCategoryId);
+        List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto productDto = new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+            productDtos.add(productDto);
+        }
+        return productDtos;
     }
 }
