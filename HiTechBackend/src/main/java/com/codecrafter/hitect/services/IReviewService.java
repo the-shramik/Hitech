@@ -12,7 +12,8 @@ public interface IReviewService {
 
     Boolean deleteReview(Long reviewId);
 
-    String updateReview(Long reviewId);
+    String updateAcceptReview(Long reviewId);
+    String updateDenyReview(Long reviewId);
 
     List<Review> getAcceptedReviews();
 

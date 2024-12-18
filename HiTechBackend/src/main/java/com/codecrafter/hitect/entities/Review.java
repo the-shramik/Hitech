@@ -24,4 +24,5 @@ public class Review {
     private Integer rating;
 
     private boolean isAccepted;
+    private boolean isDenied;
 }

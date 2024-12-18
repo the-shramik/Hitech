@@ -39,17 +39,22 @@ public class ReviewController {
         }
     }
 
-    @PutMapping("/update-review")
-    public ResponseEntity<?> updateReview(@RequestParam Long reviewId){
+    @PutMapping("/update-accept-review")
+    public ResponseEntity<?> updateAcceptReview(@RequestParam Long reviewId){
 
-        return ResponseEntity.ok(reviewService.updateReview(reviewId));
+        return ResponseEntity.ok(reviewService.updateAcceptReview(reviewId));
+    }
+
+    @PutMapping("/update-deny-review")
+    public ResponseEntity<?> updateDenyReview(@RequestParam Long reviewId){
+
+        return ResponseEntity.ok(reviewService.updateDenyReview(reviewId));
     }
 
     @GetMapping("/get-accepted-reviews")
     public ResponseEntity<?> getAcceptedReviews(){
         return ResponseEntity.ok(reviewService.getAcceptedReviews());
     }
-
     @GetMapping("/get-denied-reviews")
     public ResponseEntity<?> getDeniedReviews(){
         return ResponseEntity.ok(reviewService.getDeniedReviews());
