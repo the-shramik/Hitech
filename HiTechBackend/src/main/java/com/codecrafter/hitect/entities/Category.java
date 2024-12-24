@@ -13,12 +13,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "maincategories")
-public class MainCategory {
+@Table
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mainCategoryId;
+    private Long categoryId;
     private String mainCategoryName;
-    private LocalDate mainCategoryAddedDate;
+    private String subMainCategoryName;
+    private String subCategoryName;
+    private LocalDate categoryAddedDate;
 
 }

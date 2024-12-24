@@ -2,7 +2,7 @@ package com.codecrafter.hitect.services.impl;
 
 import com.codecrafter.hitect.entities.Review;
 import com.codecrafter.hitect.exception.ResourceNotFoundException;
-import com.codecrafter.hitect.repositories.IReviewRepository;
+import com.codecrafter.hitect.repository.IReviewRepository;
 import com.codecrafter.hitect.services.IReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,7 +17,6 @@ public class ReviewServiceImpl implements IReviewService {
 
     private final IReviewRepository reviewRepository;
 
-    @CacheEvict(value = "reviews", allEntries = true)
     @Override
     public Review addReview(Review review) {
         review.setAccepted(false);
@@ -25,20 +24,17 @@ public class ReviewServiceImpl implements IReviewService {
         return reviewRepository.save(review);
     }
 
-    @Cacheable(value = "reviews")
     @Override
     public List<Review> getAllReviews() {
         return reviewRepository.getAllReviews(false, false);
     }
 
-    @CacheEvict(value = "reviews", allEntries = true)
     @Override
     public Boolean deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
         return true;
     }
 
-    @CacheEvict(value = "reviews", allEntries = true)
     @Override
     public String updateAcceptReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
@@ -50,7 +46,6 @@ public class ReviewServiceImpl implements IReviewService {
         return "Review accepted and updated!";
     }
 
-    @CacheEvict(value = "reviews", allEntries = true)
     @Override
     public String updateDenyReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
@@ -62,13 +57,11 @@ public class ReviewServiceImpl implements IReviewService {
         return "Review denied and updated!";
     }
 
-    @Cacheable(value = "reviews", key = "'accepted'", unless = "#result.isEmpty()")
     @Override
     public List<Review> getAcceptedReviews() {
         return reviewRepository.getAllByAccepted(true);
     }
 
-    @Cacheable(value = "reviews", key = "'denied'", unless = "#result.isEmpty()")
     @Override
     public List<Review> getDeniedReviews() {
         return reviewRepository.getAllByDenied(true);

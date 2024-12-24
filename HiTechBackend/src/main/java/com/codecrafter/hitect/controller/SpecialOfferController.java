@@ -1,4 +1,4 @@
-package com.codecrafter.hitect.controllers;
+package com.codecrafter.hitect.controller;
 
 import com.codecrafter.hitect.entities.SpecialOffer;
 import com.codecrafter.hitect.services.ISpecialOfferService;

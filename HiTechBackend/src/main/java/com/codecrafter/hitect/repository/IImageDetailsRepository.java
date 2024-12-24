@@ -1,4 +1,4 @@
-package com.codecrafter.hitect.repositories;
+package com.codecrafter.hitect.repository;
 
 import com.codecrafter.hitect.entities.ImageDetails;
 import com.codecrafter.hitect.entities.Product;
@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IImageDetailsRepository extends JpaRepository<ImageDetails, Long> {
+public interface IImageDetailsRepository extends JpaRepository<ImageDetails,Long> {
 
     List<ImageDetails> findAllByProduct(Product product);
 
-    List<ImageDetails> findByProduct(Product product);
 }

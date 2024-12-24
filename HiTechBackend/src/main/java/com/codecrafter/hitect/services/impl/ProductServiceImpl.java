@@ -3,12 +3,10 @@ package com.codecrafter.hitect.services.impl;
 
 import com.codecrafter.hitect.entities.ImageDetails;
 import com.codecrafter.hitect.entities.Product;
-import com.codecrafter.hitect.entities.SubCategory;
-import com.codecrafter.hitect.entities.SubMainCategory;
 import com.codecrafter.hitect.entities.dtos.ProductDto;
 import com.codecrafter.hitect.exception.ResourceNotFoundException;
-import com.codecrafter.hitect.repositories.IImageDetailsRepository;
-import com.codecrafter.hitect.repositories.IProductRepository;
+import com.codecrafter.hitect.repository.IImageDetailsRepository;
+import com.codecrafter.hitect.repository.IProductRepository;
 import com.codecrafter.hitect.services.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -35,20 +33,26 @@ public class ProductServiceImpl implements IProductService {
 
     private final S3Client s3Client;
 
-    @CacheEvict(value = "products", allEntries = true)
     @Override
-    public Map<String, Object> addProduct(String productName, List<MultipartFile> imageFiles, Long subMainCategoryId, Long subCategoryId) throws IOException {
+    public Map<String, Object> addProduct(String productName,String productDescription, List<MultipartFile> imageFiles, String mainCategoryName, String  subMainCategoryName,String subCategoryName) throws IOException {
         Product p = new Product();
         p.setProductName(productName);
-        if(subCategoryId!=null){
-            SubCategory subCategory=new SubCategory();
-            subCategory.setSubCategoryId(subCategoryId);
-            p.setSubCategory(subCategory);
+        p.setProductDescription(productDescription);
+        if(mainCategoryName!=null){
+            p.setMainCategoryName(mainCategoryName);
+        }else {
+            p.setMainCategoryName(null);
         }
-        if(subMainCategoryId!=null){
-            SubMainCategory subMainCategory=new SubMainCategory();
-            subMainCategory.setSubMainCategoryId(subMainCategoryId);
-            p.setSubMainCategory(subMainCategory);
+
+        if(subMainCategoryName!=null){
+            p.setSubMainCategoryName(subMainCategoryName);
+        }else{
+            p.setSubMainCategoryName(null);
+        }
+        if(subCategoryName!=null){
+            p.setSubCategoryName(subCategoryName);
+        }else{
+            p.setSubCategoryName(null);
         }
 
         Product savedProduct = productRepository.save(p);
@@ -86,12 +90,14 @@ public class ProductServiceImpl implements IProductService {
         Map<String, Object> response = new HashMap<>();
         response.put("productId", savedProduct.getProductId());
         response.put("productName", savedProduct.getProductName());
+        response.put("mainCategory", savedProduct.getMainCategoryName());
+        response.put("subMainCategory", savedProduct.getSubMainCategoryName());
+        response.put("subCategory", savedProduct.getSubCategoryName());
         response.put("imageUrls", imageUrls);
 
         return response;
     }
 
-    @Cacheable(value = "products")
     @Override
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -100,6 +106,9 @@ public class ProductServiceImpl implements IProductService {
             ProductDto productDto = new ProductDto();
             productDto.setProductId(product.getProductId());
             productDto.setProductName(product.getProductName());
+            productDto.setMainCategoryName(product.getMainCategoryName());
+            productDto.setSubMainCategoryName(product.getSubMainCategoryName());
+            productDto.setSubCategoryName(product.getSubCategoryName());
             List<String> imageUrls = new ArrayList<>();
             List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
             for (ImageDetails imageDetail : imageDetails) {
@@ -111,73 +120,59 @@ public class ProductServiceImpl implements IProductService {
         return productDtos;
     }
 
-    @CacheEvict(value = "products", allEntries = true)
     @Override
-    public Map<String, Object> updateProduct(Long productId,String productName, List<MultipartFile> imageFiles, Long subMainCategoryId, Long subCategoryId) throws IOException {
+    public Map<String, Object> updateProduct(Long productId,String productName,String productDescription, List<MultipartFile> imageFiles, String mainCategoryName, String  subMainCategoryName,String subCategoryName) throws IOException {
 
         Product existedProduct=productRepository.findById(productId).orElseThrow(
                 ()->new ResourceNotFoundException("Product not found with this product id")
         );
 
-        if(productName!=null){
+
             existedProduct.setProductName(productName);
-        }else{
-            existedProduct.setProductName(existedProduct.getProductName());
-        }
-
-        if(subMainCategoryId!=null){
-            SubMainCategory subMainCategory=new SubMainCategory();
-            subMainCategory.setSubMainCategoryId(subMainCategoryId);
-            existedProduct.setSubMainCategory(subMainCategory);
-        }
-        else{
-            existedProduct.setSubMainCategory(existedProduct.getSubMainCategory());
-        }
-
-        if(subCategoryId!=null){
-            SubCategory subCategory=new SubCategory();
-            subCategory.setSubCategoryId(subCategoryId);
-            existedProduct.setSubCategory(subCategory);
-        }
-        else{
-            existedProduct.setSubCategory(existedProduct.getSubCategory());
-        }
+            existedProduct.setProductDescription(productDescription);
+            existedProduct.setMainCategoryName(mainCategoryName);
+            existedProduct.setSubMainCategoryName(subMainCategoryName);
+            existedProduct.setSubCategoryName(subCategoryName);
 
         Product savedProduct=productRepository.save(existedProduct);
 
-        List<String> imageUrls = new ArrayList<>();
 
-        for (MultipartFile imageFile : imageFiles) {
-            String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+        if(imageFiles!=null) {
+            System.out.println("IF");
 
-            File file = convertMultipartFileToFile(imageFile);
-            String bucketName = "springboot-test-0076";
+            List<String> imageUrls = new ArrayList<>();
 
-            // Upload file to S3
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(imageName)
-                    .build();
+            for (MultipartFile imageFile : imageFiles) {
+                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
 
-            PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
+                File file = convertMultipartFileToFile(imageFile);
+                String bucketName = "springboot-test-0076";
 
-            file.delete(); // Remove temporary file after upload
+                // Upload file to S3
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(imageName)
+                        .build();
 
-            // Get S3 URL
-            String imageUrl = String.format("https://%s.s3.amazonaws.com/%s", bucketName, imageName);
-            imageUrls.add(imageUrl);
+                PutObjectResponse response = s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
 
-            // Save image details
-            ImageDetails imageDetails = new ImageDetails();
-            imageDetails.setImageName(imageUrl);
-            imageDetails.setProduct(savedProduct);
-            imageDetailsRepository.save(imageDetails);
+                file.delete(); // Remove temporary file after upload
+
+                // Get S3 URL
+                String imageUrl = String.format("https://%s.s3.amazonaws.com/%s", bucketName, imageName);
+                imageUrls.add(imageUrl);
+
+                // Save image details
+                ImageDetails imageDetails = new ImageDetails();
+                imageDetails.setImageName(imageUrl);
+                imageDetails.setProduct(savedProduct);
+                imageDetailsRepository.save(imageDetails);
+            }
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("productId", savedProduct.getProductId());
         response.put("productName", savedProduct.getProductName());
-        response.put("imageUrls", imageUrls);
 
         return response;
     }
@@ -191,7 +186,6 @@ public class ProductServiceImpl implements IProductService {
     }
 
 
-    @CacheEvict(value = "products", allEntries = true)
     @Override
     public Boolean deleteProduct(Long productId) {
         // Fetch the existing product
@@ -200,7 +194,7 @@ public class ProductServiceImpl implements IProductService {
         );
 
         // Fetch all associated images for the product
-        List<ImageDetails> productImages = imageDetailsRepository.findByProduct(existedProduct);
+        List<ImageDetails> productImages = imageDetailsRepository.findAllByProduct(existedProduct);
 
         // Delete images from S3
         for (ImageDetails imageDetails : productImages) {
@@ -224,63 +218,27 @@ public class ProductServiceImpl implements IProductService {
         return true;
     }
 
-    @Cacheable(value = "products")
     @Override
-    public List<ProductDto> getAllProductsBySubMainCategory(Long subMainCategoryId) {
-        List<Product> products = productRepository.findBySubMainCategory(subMainCategoryId);
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product product : products) {
-            ProductDto productDto = new ProductDto();
-            productDto.setProductId(product.getProductId());
-            productDto.setProductName(product.getProductName());
-            List<String> imageUrls = new ArrayList<>();
-            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
-            for (ImageDetails imageDetail : imageDetails) {
-                imageUrls.add(imageDetail.getImageName());
-            }
-            productDto.setImageUrls(imageUrls);
-            productDtos.add(productDto);
+    public ProductDto getProductById(Long productId) {
+
+        Product product=productRepository.findById(productId).orElseThrow(
+                ()->new ResourceNotFoundException("Product is not present with this id")
+        );
+
+        ProductDto productDto=new ProductDto();
+        productDto.setProductId(product.getProductId());
+        productDto.setProductName(product.getProductName());
+        productDto.setMainCategoryName(product.getMainCategoryName());
+        productDto.setSubMainCategoryName(product.getSubMainCategoryName());
+        productDto.setSubCategoryName(product.getSubCategoryName());
+        productDto.setProductDescription(product.getProductDescription());
+        List<String> imageUrls = new ArrayList<>();
+        List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+        for (ImageDetails imageDetail : imageDetails) {
+            imageUrls.add(imageDetail.getImageName());
         }
-        return productDtos;
+        productDto.setImageUrls(imageUrls);
+        return productDto;
     }
 
-    @Cacheable(value = "products")
-    @Override
-    public List<ProductDto> getAllProductsBySubCategory(Long subCategoryId) {
-        List<Product> products = productRepository.findBySubCategory(subCategoryId);
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product product : products) {
-            ProductDto productDto = new ProductDto();
-            productDto.setProductId(product.getProductId());
-            productDto.setProductName(product.getProductName());
-            List<String> imageUrls = new ArrayList<>();
-            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
-            for (ImageDetails imageDetail : imageDetails) {
-                imageUrls.add(imageDetail.getImageName());
-            }
-            productDto.setImageUrls(imageUrls);
-            productDtos.add(productDto);
-        }
-        return productDtos;
-    }
-
-    @Cacheable(value = "products")
-    @Override
-    public List<ProductDto> getAllProductsByMainCategory(Long mainCategoryId) {
-        List<Product> products = productRepository.findAllProductsByMainCategoryId(mainCategoryId);
-        List<ProductDto> productDtos = new ArrayList<>();
-        for (Product product : products) {
-            ProductDto productDto = new ProductDto();
-            productDto.setProductId(product.getProductId());
-            productDto.setProductName(product.getProductName());
-            List<String> imageUrls = new ArrayList<>();
-            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
-            for (ImageDetails imageDetail : imageDetails) {
-                imageUrls.add(imageDetail.getImageName());
-            }
-            productDto.setImageUrls(imageUrls);
-            productDtos.add(productDto);
-        }
-        return productDtos;
-    }
 }

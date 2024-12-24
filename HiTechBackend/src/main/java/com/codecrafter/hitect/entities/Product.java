@@ -22,6 +22,8 @@ public class Product {
 
     private String productName;
 
+    private String productDescription;
+
     @Transient
     private String imageBase64;
 
@@ -29,11 +31,9 @@ public class Product {
     @JsonIgnore
     private List<ImageDetails> imageDetails;
 
-    @ManyToOne
-    @JoinColumn(name = "subMainCategoryId")
-    private SubMainCategory subMainCategory;
+    private String mainCategoryName;
 
-    @ManyToOne
-    @JoinColumn(name = "subCategoryId")
-    private SubCategory subCategory;
+    private String subMainCategoryName;
+
+    private String subCategoryName;
 }

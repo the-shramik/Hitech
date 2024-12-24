@@ -1,4 +1,4 @@
-package com.codecrafter.hitect.repositories;
+package com.codecrafter.hitect.repository;
 
 import com.codecrafter.hitect.entities.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +11,7 @@ import java.util.List;
 public interface IReviewRepository extends JpaRepository<Review,Long> {
 
     @Query(nativeQuery = true,value = "SELECT * FROM reviews WHERE is_accepted=? AND is_denied=?")
-    List<Review> getAllReviews(Boolean isAccepted,Boolean isDenied);
+    List<Review> getAllReviews(Boolean isAccepted, Boolean isDenied);
 
     @Query(nativeQuery = true,value = "SELECT * FROM reviews WHERE is_accepted=?")
     List<Review> getAllByAccepted(Boolean isAccepted);
