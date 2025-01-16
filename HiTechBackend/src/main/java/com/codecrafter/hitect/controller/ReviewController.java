@@ -28,15 +28,8 @@ public class ReviewController {
     @DeleteMapping("/delete-review")
     public ResponseEntity<?> deleteReview(@RequestParam Long reviewId){
 
-        boolean isDeleted= reviewService.deleteReview(reviewId);
+        return ResponseEntity.ok(reviewService.deleteReview(reviewId));
 
-
-        if (isDeleted){
-            return ResponseEntity.status(HttpStatus.OK).body("Review deleted!");
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Review not deleted!");
-        }
     }
 
     @PutMapping("/update-accept-review")

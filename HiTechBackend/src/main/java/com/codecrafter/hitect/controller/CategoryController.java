@@ -58,4 +58,14 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getSubCategories());
     }
 
+    @GetMapping("/get-sub-main-categories-by-main-category")
+    public ResponseEntity<?> getSubMainCategoriesByMainCategory(@RequestParam String mainCategoryName){
+       return ResponseEntity.ok(categoryService.getSubMainCategoriesByMainCategory(mainCategoryName));
+    }
+
+    @GetMapping("/get-sub-categories-by-sub-main-category")
+    public ResponseEntity<?> getSubCategoriesBySubMainCategory(@RequestParam String subMainCategoryName){
+       return ResponseEntity.ok(categoryService.getSubCategoriesBySubMainCategory(subMainCategoryName));
+    }
+
 }

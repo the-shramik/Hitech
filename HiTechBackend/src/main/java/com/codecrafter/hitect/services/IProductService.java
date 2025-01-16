@@ -17,4 +17,8 @@ public interface IProductService {
     Boolean deleteProduct(Long productId);
 
     ProductDto getProductById(Long productId);
+
+    List<ProductDto> getProductsByMainCategory(String mainCategoryName);
+    List<ProductDto> getProductsBySubMainCategory(String subMainCategoryName);
+    List<ProductDto> getProductsBySubCategory(String subCategoryName);
 }

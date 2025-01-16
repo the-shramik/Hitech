@@ -26,7 +26,7 @@ public class ReviewServiceImpl implements IReviewService {
 
     @Override
     public List<Review> getAllReviews() {
-        return reviewRepository.getAllReviews(false, false);
+        return reviewRepository.findAll();
     }
 
     @Override
@@ -36,25 +36,23 @@ public class ReviewServiceImpl implements IReviewService {
     }
 
     @Override
-    public String updateAcceptReview(Long reviewId) {
+    public Review updateAcceptReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new ResourceNotFoundException("Review not found")
         );
         review.setAccepted(true);
         review.setDenied(false);
-        reviewRepository.save(review);
-        return "Review accepted and updated!";
+        return reviewRepository.save(review);
     }
 
     @Override
-    public String updateDenyReview(Long reviewId) {
+    public Review updateDenyReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(
                 () -> new ResourceNotFoundException("Review not found")
         );
         review.setDenied(true);
         review.setAccepted(false);
-        reviewRepository.save(review);
-        return "Review denied and updated!";
+        return reviewRepository.save(review);
     }
 
     @Override

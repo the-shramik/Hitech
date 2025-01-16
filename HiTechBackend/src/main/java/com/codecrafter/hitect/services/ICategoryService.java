@@ -20,4 +20,7 @@ public interface ICategoryService {
     Set<String> getSubMainCategories();
 
     Set<String> getSubCategories();
+
+    Set<String> getSubMainCategoriesByMainCategory(String mainCategory);
+    Set<String> getSubCategoriesBySubMainCategory(String subMainCategory);
 }

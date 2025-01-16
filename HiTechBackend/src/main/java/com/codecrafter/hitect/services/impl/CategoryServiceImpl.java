@@ -5,8 +5,6 @@ import com.codecrafter.hitect.exception.ResourceNotFoundException;
 import com.codecrafter.hitect.repository.ICategoryRepository;
 import com.codecrafter.hitect.services.ICategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +20,9 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public Category addCategory(Category category) {
         category.setCategoryAddedDate(LocalDate.now());
+        category.setMainCategoryName(category.getMainCategoryName().toUpperCase());
+        category.setSubMainCategoryName(category.getSubMainCategoryName().toUpperCase());
+        category.setSubCategoryName(category.getSubCategoryName().toUpperCase());
         return categoryRepository.save(category);
     }
 
@@ -36,19 +37,19 @@ public class CategoryServiceImpl implements ICategoryService {
                 ()->new ResourceNotFoundException("Category is not present with this details!"));
 
         if(category.getMainCategoryName()!=null){
-            existedCategory.setMainCategoryName(category.getMainCategoryName());
+            existedCategory.setMainCategoryName(category.getMainCategoryName().toUpperCase());
         }else{
             existedCategory.setMainCategoryName(existedCategory.getMainCategoryName());
         }
 
         if(category.getSubMainCategoryName()!=null){
-            existedCategory.setSubMainCategoryName(category.getSubMainCategoryName());
+            existedCategory.setSubMainCategoryName(category.getSubMainCategoryName().toUpperCase());
         }else{
             existedCategory.setSubMainCategoryName(existedCategory.getSubMainCategoryName());
         }
 
         if(category.getSubCategoryName()!=null){
-            existedCategory.setSubCategoryName(existedCategory.getSubCategoryName());
+            existedCategory.setSubCategoryName(existedCategory.getSubCategoryName().toUpperCase());
         }else{
             existedCategory.setSubCategoryName(existedCategory.getSubCategoryName());
         }
@@ -66,7 +67,8 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public Set<String> getMainCategories() {
-       return categoryRepository.getAllMainCategories();
+
+        return categoryRepository.getAllMainCategories();
     }
 
     @Override
@@ -77,6 +79,17 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public Set<String> getSubCategories() {
         return categoryRepository.getAllSubCategories();
+    }
+
+    @Override
+    public Set<String> getSubMainCategoriesByMainCategory(String mainCategory) {
+        return  categoryRepository.getAllSubMainCategoriesByMainCategory(mainCategory.toUpperCase());
+
+    }
+
+    @Override
+    public Set<String> getSubCategoriesBySubMainCategory(String subMainCategory) {
+        return categoryRepository.getAllSubCategoriesBySubMainCategory(subMainCategory.toUpperCase());
     }
 
 

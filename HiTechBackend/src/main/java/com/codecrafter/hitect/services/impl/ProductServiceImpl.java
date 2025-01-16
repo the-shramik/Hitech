@@ -39,18 +39,18 @@ public class ProductServiceImpl implements IProductService {
         p.setProductName(productName);
         p.setProductDescription(productDescription);
         if(mainCategoryName!=null){
-            p.setMainCategoryName(mainCategoryName);
+            p.setMainCategoryName(mainCategoryName.toUpperCase());
         }else {
             p.setMainCategoryName(null);
         }
 
         if(subMainCategoryName!=null){
-            p.setSubMainCategoryName(subMainCategoryName);
+            p.setSubMainCategoryName(subMainCategoryName.toUpperCase());
         }else{
             p.setSubMainCategoryName(null);
         }
         if(subCategoryName!=null){
-            p.setSubCategoryName(subCategoryName);
+            p.setSubCategoryName(subCategoryName.toUpperCase());
         }else{
             p.setSubCategoryName(null);
         }
@@ -130,9 +130,9 @@ public class ProductServiceImpl implements IProductService {
 
             existedProduct.setProductName(productName);
             existedProduct.setProductDescription(productDescription);
-            existedProduct.setMainCategoryName(mainCategoryName);
-            existedProduct.setSubMainCategoryName(subMainCategoryName);
-            existedProduct.setSubCategoryName(subCategoryName);
+            existedProduct.setMainCategoryName(mainCategoryName.toUpperCase());
+            existedProduct.setSubMainCategoryName(subMainCategoryName.toUpperCase());
+            existedProduct.setSubCategoryName(subCategoryName.toUpperCase());
 
         Product savedProduct=productRepository.save(existedProduct);
 
@@ -239,6 +239,76 @@ public class ProductServiceImpl implements IProductService {
         }
         productDto.setImageUrls(imageUrls);
         return productDto;
+    }
+
+    @Override
+    public List<ProductDto> getProductsByMainCategory(String mainCategoryName) {
+
+        List<ProductDto> products=new ArrayList<>();
+        productRepository.findAllByMainCategoryName(mainCategoryName).forEach(product -> {
+            ProductDto productDto=new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+
+            productDto.setMainCategoryName(product.getMainCategoryName());
+            productDto.setSubMainCategoryName(product.getSubMainCategoryName());
+            productDto.setSubCategoryName(product.getSubCategoryName());
+            products.add(productDto);
+        });
+
+        return products;
+    }
+
+    @Override
+    public List<ProductDto> getProductsBySubMainCategory(String subMainCategoryName) {
+        List<ProductDto> products=new ArrayList<>();
+        productRepository.findAllBySubMainCategoryName(subMainCategoryName).forEach(product -> {
+            ProductDto productDto=new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+
+            productDto.setMainCategoryName(product.getMainCategoryName());
+            productDto.setSubMainCategoryName(product.getSubMainCategoryName());
+            productDto.setSubCategoryName(product.getSubCategoryName());
+            products.add(productDto);
+        });
+
+        return products;
+    }
+
+    @Override
+    public List<ProductDto> getProductsBySubCategory(String subCategoryName) {
+        List<ProductDto> products=new ArrayList<>();
+        productRepository.findAllBySubCategoryName(subCategoryName).forEach(product -> {
+            ProductDto productDto=new ProductDto();
+            productDto.setProductId(product.getProductId());
+            productDto.setProductName(product.getProductName());
+            List<String> imageUrls = new ArrayList<>();
+            List<ImageDetails> imageDetails = imageDetailsRepository.findAllByProduct(product);
+            for (ImageDetails imageDetail : imageDetails) {
+                imageUrls.add(imageDetail.getImageName());
+            }
+            productDto.setImageUrls(imageUrls);
+
+            productDto.setMainCategoryName(product.getMainCategoryName());
+            productDto.setSubMainCategoryName(product.getSubMainCategoryName());
+            productDto.setSubCategoryName(product.getSubCategoryName());
+            products.add(productDto);
+        });
+
+        return products;
     }
 
 }

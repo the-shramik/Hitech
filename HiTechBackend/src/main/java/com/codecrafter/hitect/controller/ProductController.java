@@ -50,18 +50,31 @@ public class ProductController {
 
             System.out.println(mainCategoryName+"=>"+subMainCategoryName+"=>"+subCategoryName);
             return ResponseEntity.ok(productService.updateProduct(productId, productName, productDescription, imageFiles, mainCategoryName, subMainCategoryName, subCategoryName));
-
     }
 
     @DeleteMapping("/delete-product")
     public ResponseEntity<?> deleteProduct(@RequestParam Long productId) {
             return ResponseEntity.ok(productService.deleteProduct(productId));
-
     }
 
 
     @GetMapping("/get-product-by-id")
     public ResponseEntity<?> getProductById(@RequestParam Long productId) {
         return ResponseEntity.ok(productService.getProductById(productId));
+    }
+
+    @GetMapping("/get-product-by-main-category")
+    public ResponseEntity<?> getProductsByMainCategory(@RequestParam String mainCategoryName){
+       return ResponseEntity.ok(productService.getProductsByMainCategory(mainCategoryName));
+    }
+
+    @GetMapping("/get-product-by-sub-main-category")
+    public ResponseEntity<?> getProductsBySubMainCategory(@RequestParam String subMainCategoryName){
+        return ResponseEntity.ok(productService.getProductsBySubMainCategory(subMainCategoryName));
+    }
+
+    @GetMapping("/get-product-by-sub-category")
+    public ResponseEntity<?> getProductsBySubCategory(@RequestParam String subCategoryName){
+        return ResponseEntity.ok(productService.getProductsBySubCategory(subCategoryName));
     }
 }
